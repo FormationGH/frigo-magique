@@ -1,32 +1,33 @@
 "use server";
 
 import { MongoClient } from "mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export async function createRecipe(formData) {
-  const title = formData.get("title");
-  const ingredients = formData.get("ingredients")?.split("|") || [];
-  const steps = formData.get("steps")?.split("|") || [];
-  const category = formData.get("category");
-  const servings = formData.get("servings");
-  const prepTime = formData.get("prepTime");
-  const cookTime = formData.get("cookTime");
-  const difficulty = formData.get("difficulty");
+  const session = await getServerSession(authOptions);
+  const pseudo = session?.user?.pseudo ?? "Erreur récupération pseudo";
 
-  // Vérification des champs
-  if (
-    !title ||
-    !ingredients.length ||
-    !steps.length ||
-    !category ||
-    !servings ||
-    !prepTime ||
-    !cookTime ||
-    !difficulty
-  ) {
+  // Récupération des champs depuis le formulaire
+  const recipeData = {
+    title: formData.get("title"),
+    ingredients: formData.get("ingredients")?.split("|") || [],
+    steps: formData.get("steps")?.split("|") || [],
+    category: formData.get("category"),
+    servings: parseInt(formData.get("servings")),
+    prepTime: parseInt(formData.get("prepTime")),
+    cookTime: parseInt(formData.get("cookTime")),
+    difficulty: formData.get("difficulty"),
+    author: pseudo,
+    creationDate: new Date(),
+  };
+
+  // Vérification des champs obligatoires
+  if (Object.values(recipeData).some((value) => !value || value === "")) {
     throw new Error("Tous les champs sont obligatoires !");
   }
 
-  if (!["entrée", "plat", "dessert"].includes(category)) {
+  if (!["starters", "main-courses", "desserts"].includes(recipeData.category)) {
     throw new Error("La catégorie doit être valide !");
   }
 
@@ -36,19 +37,17 @@ export async function createRecipe(formData) {
     await client.connect();
     const db = client.db(process.env.MONGODB_DATABASE);
 
-    await db.collection("recipes").insertOne({
-      title,
-      ingredients,
-      steps,
-      category,
-      servings: parseInt(servings),
-      prepTime: parseInt(prepTime),
-      cookTime: parseInt(cookTime),
-      difficulty,
-      creationDate: new Date(),
-    });
+    const result = await db.collection("recipes").insertOne(recipeData);
 
-    return { success: true, message: "Recette ajoutée avec succès !" };
+    if (!result.insertedId) {
+      throw new Error("L'insertion de la recette a échoué !");
+    }
+
+    return {
+      success: true,
+      message: "Recette ajoutée avec succès !",
+      id: result.insertedId.toString(),
+    };
   } catch (error) {
     throw new Error(error.message);
   } finally {

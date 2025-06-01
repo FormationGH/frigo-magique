@@ -45,8 +45,7 @@ export async function createUser(formData) {
       pseudo,
       email,
       password: encryptedPassword,
-      profile: "/picture.png",
-      // bio: "-",
+      profile: "/profile.png",
       url: "",
       creation: new Date(),
     });

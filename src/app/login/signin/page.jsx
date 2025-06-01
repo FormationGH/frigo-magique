@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
+import Button from "@/components/Buttons/Button/Button";
 
 export default function Signin() {
   const router = useRouter();
@@ -90,12 +91,12 @@ export default function Signin() {
           </div>
 
           {/* Bouton Soumettre */}
-          <button
+          <Button
             type="submit"
             className="w-full bg-[#7EAF50] text-white p-2 rounded-md shadow-md hover:bg-[#89AF66]"
           >
             Se connecter
-          </button>
+          </Button>
         </form>
       </div>
     </div>

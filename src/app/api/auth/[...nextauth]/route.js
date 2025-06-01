@@ -57,35 +57,28 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.user = user;
+      if (user) {
+        token.user = {
+          _id: user._id.toString(),
+          username: user.username,
+          pseudo: user.pseudo || "Pseudo manquant",
+          email: user.email,
+          profile: user.profile,
+        };
+      } else if (!token.user.pseudo) {
+        token.user.pseudo = "Pseudo manquant";
+      }
       return token;
     },
     async session({ session, token }) {
-      session.user = token.user;
-
-      // Connexion à MongoDB
-      const client = await MongoClient.connect(process.env.MONGODB_CLIENT);
-      console.log("Connexion MongoDB:", process.env.MONGODB_CLIENT);
-
-      const db = client.db(process.env.MONGODB_DATABASE);
-
-      // Récupérer l'utilisateur
-      const userDB = await db
-        .collection("users")
-        .findOne({ email: session.user.email });
-
-      await client.close();
-
-      return {
-        ...session,
-        user: {
-          _id: userDB._id.toString(),
-          username: userDB.username,
-          pseudo: userDB.pseudo,
-          email: userDB.email,
-          profile: userDB.profile,
-        },
+      session.user = {
+        _id: token.user._id,
+        username: token.user.username,
+        pseudo: token.user.pseudo ?? "Pseudo non récupéré",
+        email: token.user.email,
+        profile: token.user.profile,
       };
+      return session;
     },
   },
 };

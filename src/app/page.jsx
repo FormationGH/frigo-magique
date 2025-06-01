@@ -65,11 +65,6 @@ export default function Index() {
           </div>
         </Link>
       </div>
-
-      {/* Icône ou illustration */}
-      <div className="mt-8">
-        <img src="/frigo.png" alt="Frigo Magique" className="w-96 h-96" />
-      </div>
     </div>
   );
 }

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createRecipe } from "@/app/actions/create-recipe";
+import Button from "@/components/Buttons/Button/Button";
+import { useRouter } from "next/navigation";
 
-export default function AddRecipePage() {
+export default function AddRecipePage({ closeModal }) {
   const [formData, setFormData] = useState({
     title: "",
     ingredients: [],
@@ -12,14 +14,33 @@ export default function AddRecipePage() {
     cookTime: "",
     servings: "",
     difficulty: "facile",
-    category: "plat",
+    category: "",
   });
+
+  const [session, setSession] = useState(null);
+  const router = useRouter();
+
+  // Vérifier si l’utilisateur est connecté au chargement
+  useEffect(() => {
+    fetch(`/api/auth/session`)
+      .then((res) => res.json())
+      .then((data) => setSession(data));
+  }, []);
+
+  const titleInputRef = useRef(null);
+  useEffect(() => {
+    titleInputRef.current?.focus();
+  }, []);
 
   const [showIngredientModal, setShowIngredientModal] = useState(false);
   const [showStepModal, setShowStepModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const [ingredientInput, setIngredientInput] = useState("");
   const [stepInput, setStepInput] = useState("");
+
+  const [recipeLink, setRecipeLink] = useState("");
+  const [modalMessage, setModalMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -46,24 +67,62 @@ export default function AddRecipePage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("FormData envoyé :", new FormData(e.target));
+
     try {
       const formDataToSend = new FormData(e.target);
       formDataToSend.append("ingredients", formData.ingredients.join("|"));
       formDataToSend.append("steps", formData.steps.join("|"));
 
       const response = await createRecipe(formDataToSend);
-      alert(response.message);
+
+      if (response.success) {
+        const finalCategory =
+          formData.category || formDataToSend.get("category");
+
+        setRecipeLink(`/categories/${finalCategory}/recipes/${response.id}`);
+
+        setShowModal(true);
+        setModalMessage(response.message);
+      }
     } catch (error) {
       alert(error.message);
     }
   };
 
+  // Vérification avant d'afficher le formulaire
+  if (!session || !session.user) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+          <h2 className="text-xl font-bold text-[#ab833d]">Accès restreint</h2>
+          <p className="text-red-500 text-sm mb-3">
+            Connectez-vous pour ajouter une recette.
+          </p>
+          <button
+            onClick={() => router.push("/login/signup")}
+            className="add-button mr-5"
+          >
+            Se connecter
+          </button>
+
+          <button
+            onClick={() => router.push("/")}
+            className="close-button mt-4"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex justify-center items-center">
-      <div className="form-container" style={{ marginTop: "80px" }}>
-        <h1 className="title">Ajouter une recette</h1>
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-xl font-bold text-[#ab833d]">
+          Ajouter une recette
+        </h2>
+        <form onSubmit={handleSubmit} className="mt-4">
           {/* Champs cachés pour envoyer les ingrédients et étapes */}
           <input
             type="hidden"
@@ -76,6 +135,7 @@ export default function AddRecipePage() {
           <div>
             <label className="form-label">Nom de la recette</label>
             <input
+              ref={titleInputRef}
               type="text"
               name="title"
               onChange={handleChange}
@@ -132,9 +192,9 @@ export default function AddRecipePage() {
               required
               className="form-input"
             >
-              <option value="entrée">Entrée</option>
-              <option value="plat">Plat</option>
-              <option value="dessert">Dessert</option>
+              <option value="starters">Entrée</option>
+              <option value="main-courses">Plat</option>
+              <option value="desserts">Dessert</option>
             </select>
           </div>
 
@@ -187,6 +247,7 @@ export default function AddRecipePage() {
             </button>
           </div>
         </form>
+        {/* Bouton */}
       </div>
 
       {/* Modale pour ajouter un ingrédient */}
@@ -211,7 +272,7 @@ export default function AddRecipePage() {
             <button
               type="button"
               onClick={() => setShowIngredientModal(false)}
-              className="signout-button"
+              className="close-button"
             >
               Fermer
             </button>
@@ -231,16 +292,32 @@ export default function AddRecipePage() {
               onChange={(e) => setStepInput(e.target.value)}
               className="form-input"
             />
-            <button type="button" onClick={addStep} className="add-button">
+            <Button type="button" onClick={addStep} className="add-button">
               Ajouter
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setShowStepModal(false)}
-              className="signout-button"
+              className="close-button"
             >
               Fermer
-            </button>
+            </Button>
+          </div>
+        </div>
+      )}
+      {showModal && recipeLink && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+          <div className="form-container space-x-4 space-y-4">
+            <h2 className="title">{modalMessage}</h2>
+            <a href={recipeLink} className="add-button">
+              Voir la recette
+            </a>
+            <Button
+              onClick={() => setShowModal(false)}
+              className="close-button"
+            >
+              Fermer
+            </Button>
           </div>
         </div>
       )}

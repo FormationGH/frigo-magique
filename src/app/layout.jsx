@@ -13,7 +13,7 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const session = await getServerSession(authOptions); // Récupérer la session côté serveur
+  const session = await getServerSession(authOptions); // Récupère la session côté serveur
   return (
     <html lang="fr">
       <body className="bg-gray flex flex-col min-h-screen">

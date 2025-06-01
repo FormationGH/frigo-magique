@@ -19,10 +19,13 @@ export default function Login() {
 
         <div className="flex flex-col gap-4">
           {/* Connexion */}
-          <Link href="/login/signup" onClick={() => onSelectMode("user")}>
-            <div className="auth-method auth-method-green max-w-md space-y-6">
+          <Link href="/login/signup">
+            <div
+              className="add-button text-[#7EAF50] max-w-md space-y-6"
+              onClick={() => onSelectMode("user")}
+            >
               <h3 className="font-bold text-xl">S'inscrire ou se connecter</h3>
-              <p className="text-white text-sm mt-2">
+              <p className="text-sm mt-2">
                 Accédez aux fonctionnalités complètes : entrez vos ingrédients,
                 sauvegardez vos recettes et profitez du mode anti-gaspillage !
               </p>
@@ -30,9 +33,12 @@ export default function Login() {
           </Link>
 
           {/* Mode Invité */}
-          <Link href="/login/pass" onClick={() => onSelectMode("guest")}>
-            <div className="auth-method auth-method-brown max-w-md space-y-6">
-              <h3 className="font-bold text-xl">👤 Utiliser en mode invité</h3>
+          <Link href="/login/pass">
+            <div
+              className="auth-method auth-method-brown max-w-md space-y-6"
+              onClick={() => onSelectMode("guest")}
+            >
+              <h3 className="font-bold text-xl"> Utiliser en mode invité</h3>
               <p className="text-white text-sm mt-2">
                 Explorez Frigo Magique sans compte : découvrez des recettes sans
                 pouvoir ajouter vos propres ingrédients.

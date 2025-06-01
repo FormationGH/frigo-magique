@@ -1,6 +1,9 @@
 export async function GET(req) {
   const url = new URL(req.url);
   const category = url.searchParams.get("category");
+  const page = parseInt(url.searchParams.get("page")) || 1;
+  const limit = parseInt(url.searchParams.get("limit")) || 2;
+  const skip = (page - 1) * limit;
 
   const client = new MongoClient(process.env.MONGODB_CLIENT);
   await client.connect();
@@ -10,8 +13,15 @@ export async function GET(req) {
     const recipes = await db
       .collection("recipes")
       .find(category ? { category } : {})
+      .skip(skip)
+      .limit(limit)
       .toArray();
-    return new Response(JSON.stringify(recipes), { status: 200 });
+    const totalRecipes = await db
+      .collection("recipes")
+      .countDocuments(category ? { category } : {});
+    return new Response(JSON.stringify({ recipes, totalRecipes }), {
+      status: 200,
+    });
   } catch (error) {
     return new Response(error.message, { status: 500 });
   } finally {

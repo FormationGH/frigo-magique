@@ -24,24 +24,36 @@
   @apply px-2 py-1 text-xs max-w-[120px];
 }
 
-.signout-button button {
+.signout-button {
   @apply bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl;
+}
+
+.close-button {
+  @apply border border-black text-black px-4 py-2 rounded-md bg-transparent hover:bg-gray-100;
 }
 
 .auth-method {
   @apply p-6 rounded-2xl cursor-pointer transition duration-300 hover:scale-105;
 }
 
-.auth-method-green {
-  @apply bg-[#7EAF50] text-white hover:bg-[#89AF66];
-}
+/* .return-button {
+  @apply bg-[#7EAF50] text-white text-lg font-bold px-5 py-2 rounded-lg hover:bg-[#65963E] transition;
+} */
+
+/* .auth-method-green {
+  @apply border border-[#7EAF50] text-[#7EAF50] hover:bg-[#89AF66];
+} */
 
 .auth-method-brown {
   @apply bg-[#ab833d] text-white hover:bg-[#D4A867];
 }
 
 .add-button {
-  @apply border border-[#7EAF50] px-4 py-2 rounded-md text-[#7EAF50] hover:bg-gray-200 transition;
+  @apply border border-[#7EAF50] px-4 py-2 shadow-lg rounded-lg text-[#7EAF50] inline-block hover:bg-gray-200 transition-transform hover:scale-105;
+}
+
+.return-button {
+  @apply flex items-center gap-2 border border-[#902124] px-4 py-2 shadow-lg rounded-md text-[#902124] hover:bg-gray-200 transition-transform hover:scale-105;
 }
 
 /* ---------- */
@@ -51,5 +63,5 @@
 }
 
 .guest-button {
-  @apply bg-[#7EAF50] text-white p-4 rounded-xl shadow-lg hover:bg-[#89AF66] transition-transform hover:scale-105;
+  @apply bg-[#7EAF50] text-white px-4 py-2 rounded-md shadow-lg inline-block hover:bg-[#89AF66] transition-transform hover:scale-105;
 }

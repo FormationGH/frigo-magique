@@ -2,6 +2,7 @@
 
 import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import Button from "@/components/Buttons/Button/Button";
 
 export default function GuestMode() {
   const router = useRouter();
@@ -20,9 +21,9 @@ export default function GuestMode() {
           disponibles !
         </p>
 
-        <button onClick={onGuestContinue} className="guest-button">
+        <Button onClick={onGuestContinue} className="guest-button">
           Continuer en mode invité
-        </button>
+        </Button>
 
         <p className="text-sm mt-6 text-gray-500">
           Note : En mode invité, vous ne pourrez pas sauvegarder vos ingrédients

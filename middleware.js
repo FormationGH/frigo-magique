@@ -1,21 +1,12 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export function middleware(request) {
-  console.log("Middleware exécuté sur :", request.nextUrl.pathname);
-  let isAuthenticated = false;
+export async function middleware(request) {
+  // Vérifier la session côté serveur avec NextAuth
+  const session = await getServerSession(authOptions);
 
-  // Vérifie si l'utilisateur est invité
-  if (request.cookies.get("guest")) {
-    isAuthenticated = true;
-  }
-
-  // Vérifie si l'utilisateur est connecté via NextAuth
-  if (request.cookies.get("__Secure-next-auth.session-token")) {
-    isAuthenticated = true;
-  }
-
-  // Redirige si l'utilisateur n'est pas authentifié
-  if (!isAuthenticated) {
+  if (!session) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
@@ -25,5 +16,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/ingredients", "/recipes", "/categories", "/categories/:path*"], // Ajout de routes spécifiques
+  matcher: ["/ingredients", "/recipes", "/categories/:path*"], // Routes protégées
 };

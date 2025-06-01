@@ -4,11 +4,12 @@ import Link from "next/link";
 import Footer from "../Footer/Footer";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import Button from "../Button/Button";
+import Button from "@/components/Buttons/Button/Button";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+import SearchModal from "../SearchModal/SearchModal";
 
 export default function ConnectedLayout({ children }) {
   // Variables
@@ -16,6 +17,7 @@ export default function ConnectedLayout({ children }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [isGuest, setIsGuest] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const mode = getCookie("accessMode");
@@ -54,12 +56,12 @@ export default function ConnectedLayout({ children }) {
   const userButtons = () => (
     <>
       {isGuest && (
-        <button
+        <Button
           onClick={exitGuestMode}
           className="text-[#902124] rounded-xl border border-[#902124] px-4 py-2"
         >
           Quitter mode invité
-        </button>
+        </Button>
       )}
       {session?.user?.email ? (
         <div className="signout-button">
@@ -99,12 +101,13 @@ export default function ConnectedLayout({ children }) {
         </Link>
       </li>
       <li>
-        <Link href="/search">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="p-1 rounded-xl hover:bg-gray-800 duration-150"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className={`w-10 h-10 hover:bg-gray-800 duration-150 p-1 rounded-xl ${
-              pathname == "/search" ? "text-white" : "text-gray-500"
-            }`}
+            className={`w-10 h-10 text-gray-500`}
             viewBox="0 0 256 256"
           >
             <path
@@ -112,8 +115,9 @@ export default function ConnectedLayout({ children }) {
               d="M232.49 215.51L185 168a92.12 92.12 0 1 0-17 17l47.53 47.54a12 12 0 0 0 17-17ZM44 112a68 68 0 1 1 68 68a68.07 68.07 0 0 1-68-68"
             />
           </svg>
-        </Link>
+        </button>
       </li>
+
       <li>
         <Link href="/profile">
           <svg
@@ -147,7 +151,7 @@ export default function ConnectedLayout({ children }) {
           />
         </div>
 
-        {/* Navigation affichée sur grand écran */}
+        {/* Navigation */}
         <nav className="hidden lg:flex flex-grow justify-center">
           <ul className="flex gap-6">{navLinks}</ul>
         </nav>
@@ -159,7 +163,7 @@ export default function ConnectedLayout({ children }) {
 
         {/* Menu Burger pour mobile */}
         <div className="relative group lg:hidden">
-          <button className="block  p-2 rounded-md border text-white cursor-pointer focus:outline-none">
+          <Button className="block  p-2 rounded-md border text-white cursor-pointer focus:outline-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="32"
@@ -171,7 +175,7 @@ export default function ConnectedLayout({ children }) {
                 d="M224 128a8 8 0 0 1-8 8H40a8 8 0 0 1 0-16h176a8 8 0 0 1 8 8M40 72h176a8 8 0 0 0 0-16H40a8 8 0 0 0 0 16m176 112H40a8 8 0 0 0 0 16h176a8 8 0 0 0 0-16"
               />
             </svg>
-          </button>
+          </Button>
 
           {/* Menu déroulant */}
           <div className="absolute top-16 right-4 bg-white shadow-lg rounded-md p-4 hidden group-focus-within:block">
@@ -184,6 +188,8 @@ export default function ConnectedLayout({ children }) {
           </div>
         </div>
       </header>
+
+      {isOpen && <SearchModal closeModal={() => setIsOpen(false)} />}
 
       {/* Content */}
       <div className="flex-1">{children}</div>

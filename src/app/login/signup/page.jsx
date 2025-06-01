@@ -1,7 +1,7 @@
 "use client";
 
 import { createUser } from "@/app/actions/create-users";
-import Button from "@/components/Button/Button";
+import Button from "@/components/Buttons/Button/Button";
 import { checkEmail } from "@/utils/check-emailsyntax";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,13 +11,6 @@ export default function Signup() {
   const router = useRouter();
 
   async function prepareCreateUser(formData) {
-    console.log(
-      "Données reçues :",
-      formData.get("username"),
-      formData.get("pseudo"),
-      formData.get("email"),
-      formData.get("password")
-    );
     const username = formData.get("username");
     const pseudo = formData.get("pseudo");
     const email = formData.get("email");
@@ -117,12 +110,12 @@ export default function Signup() {
             </div>
 
             {/* Bouton d'inscription */}
-            <button
+            <Button
               type="submit"
               className="w-full bg-[#7EAF50] text-white p-2 rounded-md shadow-md hover:bg-[#89AF66]"
             >
               S'inscrire
-            </button>
+            </Button>
           </form>
         </div>
 
