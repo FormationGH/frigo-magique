@@ -8,8 +8,8 @@ export default function ReturnButton({
   color = "#902124",
 }) {
   return (
-    <Link href={href}>
-      <Button className="return-button flex items-center">
+    <Button className="return-button flex items-center">
+      <Link href={href} className="flex items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width={size}
@@ -22,7 +22,7 @@ export default function ReturnButton({
           />
         </svg>
         {label}
-      </Button>
-    </Link>
+      </Link>
+    </Button>
   );
 }

@@ -3,14 +3,9 @@
 import ReturnButton from "@/components/Buttons/ReturnButton/ReturnButton";
 import AddRecipeButton from "@/components/Buttons/AddRecipeButton/AddRecipeButton";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-const categoryLabels = {
-  starters: "Entrées",
-  "main-courses": "Plats principaux",
-  desserts: "Desserts",
-};
+import { useSession } from "next-auth/react";
 
 export default function CategoryPage({
   categoryName,
@@ -19,8 +14,19 @@ export default function CategoryPage({
   totalRecipes,
 }) {
   const [page, setPage] = useState(1);
-  const limit = 2;
+  const limit = 3;
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      return; // Permet aux invités de voir les recettes
+    }
+    if (!session.user) {
+      router.push("/login");
+    }
+  }, [session, status]);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
@@ -28,19 +34,19 @@ export default function CategoryPage({
   };
 
   return (
-    <div className="text-center p-6 mt-10">
+    <div className="text-center p-6 mt-10 ">
       <h1 className="text-3xl font-bold text-[#7EAF50] mb-4">{categoryName}</h1>
       <p className="text-lg text-[#ab833d] mb-6">
         Découvrez les meilleures recettes de {categoryName} !
       </p>
 
-      {/* Bouton Retour*/}
+      {/* Boutons: Retour et Ajout*/}
       <ReturnButton label="Retour aux catégories" />
       <AddRecipeButton />
 
       {/* Affichage des recettes */}
       {recipes?.length > 0 ? (
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <ul className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {recipes.map((recipe) => (
             <li
               key={recipe._id}
@@ -51,12 +57,19 @@ export default function CategoryPage({
               </h3>
 
               <p className="text-sm text-gray-500">
-                Recette postée par :{" "}
-                <span className="font-semibold">{recipe.author}</span>
+                Auteur : <span className="font-semibold">{recipe.author}</span>
               </p>
 
+              {recipe.image && (
+                <img
+                  src={recipe.image}
+                  alt={recipe.title}
+                  className="recipe-image mb-4"
+                />
+              )}
+
               <p className="text-sm text-gray-500">
-                Catégorie : {recipe.category} | Portions : {recipe.servings}
+                Catégorie : {categoryName} | Portions : {recipe.servings}
               </p>
 
               <p className="text-sm text-gray-500">
@@ -70,7 +83,9 @@ export default function CategoryPage({
 
               {/* Bouton détails */}
               <div className="mt-2 flex gap-4">
-                <Link href={`/categories/${categoryKey}/recipes/${recipe._id}`}>
+                <Link
+                  href={`/categories/${categoryKey}/recipes/${recipe.slug}`}
+                >
                   <button className="add-button">
                     Voir la recette complète
                   </button>

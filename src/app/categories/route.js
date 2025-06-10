@@ -1,3 +1,6 @@
+import { MongoClient } from "mongodb";
+import errorMessages from "@/utils/error";
+
 export async function GET(req) {
   const url = new URL(req.url);
   const category = url.searchParams.get("category");
@@ -23,7 +26,9 @@ export async function GET(req) {
       status: 200,
     });
   } catch (error) {
-    return new Response(error.message, { status: 500 });
+    return new Response(JSON.stringify({ error: errorMessages.serverError }), {
+      status: 500,
+    });
   } finally {
     await client.close();
   }

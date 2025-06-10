@@ -2,6 +2,7 @@ import { MongoClient } from "mongodb";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import NextAuth from "next-auth/next";
+import errorMessages from "@/utils/error";
 
 export const authOptions = {
   providers: [
@@ -21,17 +22,17 @@ export const authOptions = {
 
           if (!user) {
             await client.close();
-            throw new Error("Cet utilisateur n'existe pas");
+            throw new Error(errorMessages.userNotFound);
           }
 
           // Vérifier le mot de passe avec bcrypt
           const isPasswordValid = await bcrypt.compare(password, user.password);
           if (!isPasswordValid) {
             await client.close();
-            throw new Error("Le mot de passe est incorrect");
+            throw new Error(errorMessages.incorrectPassword);
           }
 
-          // Formater l'utilisateur **sans le mot de passe**
+          // Formater l'utilisateur sans le mot de passe
           const formattedUser = {
             _id: user._id.toString(),
             username: user.username,
@@ -43,7 +44,7 @@ export const authOptions = {
           await client.close();
           return formattedUser;
         } catch (error) {
-          throw new Error(error.message);
+          throw new Error(errorMessages.serverError);
         }
       },
     }),

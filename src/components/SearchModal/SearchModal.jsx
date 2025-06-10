@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import errorMessages from "@/utils/error";
 
 export default function SearchModal({ closeModal }) {
   const [search, setSearch] = useState("");
@@ -22,7 +23,7 @@ export default function SearchModal({ closeModal }) {
 
   const handleSearch = async () => {
     if (!session || !session.user) {
-      setErrorMessage("Connectez-vous pour utiliser la recherche.");
+      setErrorMessage(errorMessages.sessionError);
       return;
     }
 
@@ -38,16 +39,14 @@ export default function SearchModal({ closeModal }) {
     });
 
     if (!res.ok) {
-      console.error("Erreur API:", res.statusText);
+      setErrorMessage(errorMessages.serverError);
       return;
     }
 
     const data = await res.json();
     if (!data || data.length === 0) {
       setResults([]);
-      setErrorMessage(
-        `Aucune recette trouvée avec "${search}". Essayez un autre terme !`
-      );
+      setErrorMessage(`${errorMessages.recipeNotFound} "${search}".`);
       return;
     }
 
@@ -124,6 +123,12 @@ export default function SearchModal({ closeModal }) {
               Rechercher
             </button>
 
+            {/* Bouton Fermer */}
+
+            <button type="button" onClick={closeModal} className="close-button">
+              Fermer
+            </button>
+
             {/* Affichage des résultats */}
             {results.length > 0 && (
               <div className="mt-4 text-left">
@@ -131,10 +136,10 @@ export default function SearchModal({ closeModal }) {
                   Recettes trouvées :
                 </h2>
                 <ul className="mt-2 space-y-2">
-                  {results.map((recipe) => (
-                    <li key={recipe._id}>
+                  {results.map((recipe, index) => (
+                    <li key={`${recipe.slug}-${index}`}>
                       <a
-                        href={`/categories/${recipe.category}/recipes/${recipe._id}`}
+                        href={`/categories/${recipe.category}/recipes/${recipe.slug}`}
                         className="hover:underline"
                       >
                         {recipe.title}

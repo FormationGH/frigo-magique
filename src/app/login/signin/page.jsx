@@ -4,7 +4,7 @@ import { checkEmail } from "@/utils/check-emailsyntax";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
+import errorMessages from "@/utils/error";
 import Button from "@/components/Buttons/Button/Button";
 
 export default function Signin() {
@@ -17,12 +17,12 @@ export default function Signin() {
 
     // Vérification des champs
     if (!email || !password) {
-      return toast.error("Veuillez remplir tous les champs !");
+      return toast.error(errorMessages.missingFields);
     }
 
     // Vérification de l'email
     if (!checkEmail(email)) {
-      return toast.error("Veuillez entrer un email valide !");
+      return toast.error(errorMessages.invalidEmail);
     }
 
     try {
@@ -33,14 +33,13 @@ export default function Signin() {
       });
 
       if (response.error) {
-        return toast.error(response.error || "Identifiants incorrects !");
+        return toast.error(errorMessages.loginFailed);
       }
 
       toast.success("Connexion réussie !");
       router.replace("/"); // Redirection après connexion
     } catch (error) {
-      console.error(" Erreur de connexion :", error.message);
-      toast.error(error.message);
+      toast.error(errorMessages.serverError);
     }
   };
 

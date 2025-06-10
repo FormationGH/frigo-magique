@@ -1,8 +1,9 @@
 "use server";
 
 import { MongoClient } from "mongodb";
+import errorMessages from "@/utils/error";
 
-export async function getRecipesByCategory(category, page = 1, limit = 2) {
+export async function getRecipesByCategory(category, page = 1, limit = 3) {
   const client = new MongoClient(process.env.MONGODB_CLIENT);
   await client.connect();
   const db = client.db(process.env.MONGODB_DATABASE);
@@ -14,7 +15,7 @@ export async function getRecipesByCategory(category, page = 1, limit = 2) {
       .collection("recipes")
       .find(category ? { category } : {})
       .skip(skip) // Ajoute la pagination
-      .limit(limit) // Limite à 2 recettes
+      .limit(limit) // Limite au nombre de recettes à afficher
       .toArray();
 
     const totalRecipes = await db
@@ -31,8 +32,7 @@ export async function getRecipesByCategory(category, page = 1, limit = 2) {
     });
     return { recipes, totalRecipes };
   } catch (error) {
-    console.error("Erreur lors de la récupération des recettes :", error);
-    return { recipes: [], totalRecipes: 0 };
+    return { recipes: [], totalRecipes: 0, error: errorMessages.fetchError };
   } finally {
     await client.close();
   }

@@ -3,6 +3,7 @@
 import { MongoClient } from "mongodb";
 import bcrypt from "bcrypt";
 import { checkEmail } from "@/utils/check-emailsyntax";
+import errorMessages from "@/utils/error";
 
 export async function createUser(formData) {
   const username = formData.get("username");
@@ -11,11 +12,11 @@ export async function createUser(formData) {
   const password = formData.get("password");
 
   if (!username || !pseudo || !email || !password) {
-    throw new Error("Aucun champ ne doit être vide !");
+    throw new Error(errorMessages.missingFields);
   }
 
   if (!checkEmail(email)) {
-    throw new Error("Veuillez entrer un email valide !");
+    throw new Error(errorMessages.invalidEmail);
   }
 
   const client = await MongoClient.connect(process.env.MONGODB_CLIENT);
@@ -26,14 +27,14 @@ export async function createUser(formData) {
     let user = await db.collection("users").find({ email }).limit(1).toArray();
     if (user.length !== 0) {
       await client.close();
-      throw new Error("Cet email est déjà utilisé !");
+      throw new Error(errorMessages.emailExists);
     }
 
     // Vérifier si le pseudo est déjà utilisé
     user = await db.collection("users").find({ pseudo }).limit(1).toArray();
     if (user.length !== 0) {
       await client.close();
-      throw new Error("Ce pseudo est déjà utilisé !");
+      throw new Error(errorMessages.generalServerError);
     }
 
     // Hacher le mot de passe

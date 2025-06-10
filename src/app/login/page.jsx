@@ -21,7 +21,7 @@ export default function Login() {
           {/* Connexion */}
           <Link href="/login/signup">
             <div
-              className="add-button text-[#7EAF50] max-w-md space-y-6"
+              className="auth-method auth-method-green max-w-md space-y-6"
               onClick={() => onSelectMode("user")}
             >
               <h3 className="font-bold text-xl">S'inscrire ou se connecter</h3>
@@ -39,7 +39,7 @@ export default function Login() {
               onClick={() => onSelectMode("guest")}
             >
               <h3 className="font-bold text-xl"> Utiliser en mode invité</h3>
-              <p className="text-white text-sm mt-2">
+              <p className="text-sm mt-2">
                 Explorez Frigo Magique sans compte : découvrez des recettes sans
                 pouvoir ajouter vos propres ingrédients.
               </p>

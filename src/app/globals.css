@@ -20,9 +20,9 @@
 }
 
 /* Boutons */
-.menu-dropdown button {
+/* .menu-dropdown button {
   @apply px-2 py-1 text-xs max-w-[120px];
-}
+} */
 
 .signout-button {
   @apply bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl;
@@ -40,12 +40,12 @@
   @apply bg-[#7EAF50] text-white text-lg font-bold px-5 py-2 rounded-lg hover:bg-[#65963E] transition;
 } */
 
-/* .auth-method-green {
-  @apply border border-[#7EAF50] text-[#7EAF50] hover:bg-[#89AF66];
-} */
+.auth-method-green {
+  @apply border border-[#7EAF50] text-[#7EAF50] hover:bg-gray-200;
+}
 
 .auth-method-brown {
-  @apply bg-[#ab833d] text-white hover:bg-[#D4A867];
+  @apply border border-[#ab833d] text-[#ab833d] hover:bg-gray-200;
 }
 
 .add-button {
@@ -64,4 +64,11 @@
 
 .guest-button {
   @apply bg-[#7EAF50] text-white px-4 py-2 rounded-md shadow-lg inline-block hover:bg-[#89AF66] transition-transform hover:scale-105;
+}
+
+.recipe-image {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
 }

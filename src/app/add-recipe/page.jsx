@@ -2,11 +2,13 @@
 
 import { useEffect, useState, useRef } from "react";
 import { createRecipe } from "@/app/actions/create-recipe";
-import Button from "@/components/Buttons/Button/Button";
+// import Button from "@/components/Buttons/Button/Button";
 import { useRouter } from "next/navigation";
+import AddRecipeForm from "@/components/AddRecipeForm/AddRecipeForm";
+import errorMessages from "@/utils/error";
 
-export default function AddRecipePage({ closeModal }) {
-  const [formData, setFormData] = useState({
+export default function AddRecipePage({ showForm, setShowForm }) {
+  const emptyFormData = {
     title: "",
     ingredients: [],
     steps: [],
@@ -15,7 +17,8 @@ export default function AddRecipePage({ closeModal }) {
     servings: "",
     difficulty: "facile",
     category: "",
-  });
+  };
+  const [formData, setFormData] = useState(emptyFormData);
 
   const [session, setSession] = useState(null);
   const router = useRouter();
@@ -41,6 +44,7 @@ export default function AddRecipePage({ closeModal }) {
 
   const [recipeLink, setRecipeLink] = useState("");
   const [modalMessage, setModalMessage] = useState("");
+  const [image, setImage] = useState(null); // Gère l'image sélectionnée
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -73,19 +77,47 @@ export default function AddRecipePage({ closeModal }) {
       formDataToSend.append("ingredients", formData.ingredients.join("|"));
       formDataToSend.append("steps", formData.steps.join("|"));
 
+      let imageUrl = "";
+      if (image) {
+        try {
+          const imageFormData = new FormData();
+          imageFormData.append("file", image);
+          imageFormData.append("upload_preset", "recipes");
+
+          const res = await fetch(
+            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+            {
+              method: "POST",
+              body: imageFormData,
+            }
+          );
+
+          if (!res.ok) throw new Error(errorMessages.imageUploadError);
+
+          const data = await res.json();
+          imageUrl = data.secure_url || "";
+        } catch (error) {
+          alert(errorMessages.imageUploadError);
+        }
+      }
+
+      formDataToSend.append("image", imageUrl);
+
       const response = await createRecipe(formDataToSend);
 
       if (response.success) {
         const finalCategory =
           formData.category || formDataToSend.get("category");
 
-        setRecipeLink(`/categories/${finalCategory}/recipes/${response.id}`);
+        setRecipeLink(`/categories/${finalCategory}/recipes/${response.slug}`);
 
         setShowModal(true);
         setModalMessage(response.message);
+        // Réinitialisation du formulaire après l'ajout
+        setFormData(emptyFormData);
       }
     } catch (error) {
-      alert(error.message);
+      alert(errorMessages.serverError);
     }
   };
 
@@ -96,7 +128,7 @@ export default function AddRecipePage({ closeModal }) {
         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
           <h2 className="text-xl font-bold text-[#ab833d]">Accès restreint</h2>
           <p className="text-red-500 text-sm mb-3">
-            Connectez-vous pour ajouter une recette.
+            {errorMessages.sessionError}
           </p>
           <button
             onClick={() => router.push("/login/signup")}
@@ -117,210 +149,33 @@ export default function AddRecipePage({ closeModal }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-bold text-[#ab833d]">
-          Ajouter une recette
-        </h2>
-        <form onSubmit={handleSubmit} className="mt-4">
-          {/* Champs cachés pour envoyer les ingrédients et étapes */}
-          <input
-            type="hidden"
-            name="ingredients"
-            value={formData.ingredients.join("|")}
+    <>
+      {showForm && (
+        <div>
+          <AddRecipeForm
+            handleSubmit={handleSubmit}
+            handleChange={handleChange}
+            formData={formData}
+            titleInputRef={titleInputRef}
+            setImage={setImage}
+            setShowIngredientModal={setShowIngredientModal}
+            setShowStepModal={setShowStepModal}
+            addIngredient={addIngredient}
+            addStep={addStep}
+            showIngredientModal={showIngredientModal}
+            showStepModal={showStepModal}
+            ingredientInput={ingredientInput}
+            setIngredientInput={setIngredientInput}
+            stepInput={stepInput}
+            setStepInput={setStepInput}
+            showModal={showModal}
+            setShowModal={setShowModal}
+            modalMessage={modalMessage}
+            recipeLink={recipeLink}
+            closeModal={() => setShowForm(false)}
           />
-          <input type="hidden" name="steps" value={formData.steps.join("|")} />
-
-          {/* Colonne de gauche */}
-          <div>
-            <label className="form-label">Nom de la recette</label>
-            <input
-              ref={titleInputRef}
-              type="text"
-              name="title"
-              onChange={handleChange}
-              required
-              className="form-input"
-            />
-
-            <label className="form-label">Temps de préparation (min)</label>
-            <input
-              type="number"
-              name="prepTime"
-              onChange={handleChange}
-              required
-              className="form-input"
-            />
-
-            <label className="form-label">Temps de cuisson (min)</label>
-            <input
-              type="number"
-              name="cookTime"
-              onChange={handleChange}
-              required
-              className="form-input"
-            />
-          </div>
-
-          {/* Colonne de droite */}
-          <div>
-            <label className="form-label">Nombre de portions</label>
-            <input
-              type="number"
-              name="servings"
-              onChange={handleChange}
-              required
-              className="form-input"
-            />
-
-            <label className="form-label">Difficulté</label>
-            <select
-              name="difficulty"
-              onChange={handleChange}
-              required
-              className="form-input"
-            >
-              <option value="facile">Facile</option>
-              <option value="moyen">Moyen</option>
-              <option value="difficile">Difficile</option>
-            </select>
-
-            <label className="form-label">Catégorie</label>
-            <select
-              name="category"
-              onChange={handleChange}
-              required
-              className="form-input"
-            >
-              <option value="starters">Entrée</option>
-              <option value="main-courses">Plat</option>
-              <option value="desserts">Dessert</option>
-            </select>
-          </div>
-
-          {/* Boutons pour ajouter ingrédients et étapes */}
-          <div className="col-span-2 flex justify-between mt-4">
-            <button
-              type="button"
-              onClick={() => setShowIngredientModal(true)}
-              className="add-button"
-            >
-              Ajouter un ingrédient
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowStepModal(true)}
-              className="add-button"
-            >
-              Ajouter une étape
-            </button>
-          </div>
-
-          {/* Liste des ingrédients */}
-          <ul
-            hidden={!formData.ingredients.length}
-            className="col-span-2 mt-2 bg-gray-100 p-4 rounded-lg"
-          >
-            {formData.ingredients.map((ingredient, index) => (
-              <li key={index} className="text-sm">
-                ✔ {ingredient}
-              </li>
-            ))}
-          </ul>
-
-          {/* Liste des étapes */}
-          <ul
-            hidden={!formData.steps.length}
-            className="col-span-2 mt-2 bg-gray-100 p-4 rounded-lg"
-          >
-            {formData.steps.map((step, index) => (
-              <li key={index} className="text-sm">
-                Étape {index + 1}: {step}
-              </li>
-            ))}
-          </ul>
-
-          {/* Bouton principal - Ajouter la recette */}
-          <div className="col-span-2 mt-6">
-            <button type="submit" className="guest-button">
-              Ajouter la recette
-            </button>
-          </div>
-        </form>
-        {/* Bouton */}
-      </div>
-
-      {/* Modale pour ajouter un ingrédient */}
-      {showIngredientModal && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-          <div className="form-container space-x-4 space-y-4">
-            <h2 className="title">Ajouter un ingrédient</h2>
-            <input
-              type="text"
-              placeholder="Ex: farine, œufs..."
-              value={ingredientInput}
-              onChange={(e) => setIngredientInput(e.target.value)}
-              className="form-input"
-            />
-            <button
-              type="button"
-              onClick={addIngredient}
-              className="add-button"
-            >
-              Ajouter
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowIngredientModal(false)}
-              className="close-button"
-            >
-              Fermer
-            </button>
-          </div>
         </div>
       )}
-
-      {/* Modale pour ajouter une étape */}
-      {showStepModal && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-          <div className="form-container space-x-4 space-y-4">
-            <h2 className="title">Ajouter une étape</h2>
-            <input
-              type="text"
-              placeholder="Ex: Mélanger la farine..."
-              value={stepInput}
-              onChange={(e) => setStepInput(e.target.value)}
-              className="form-input"
-            />
-            <Button type="button" onClick={addStep} className="add-button">
-              Ajouter
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setShowStepModal(false)}
-              className="close-button"
-            >
-              Fermer
-            </Button>
-          </div>
-        </div>
-      )}
-      {showModal && recipeLink && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-          <div className="form-container space-x-4 space-y-4">
-            <h2 className="title">{modalMessage}</h2>
-            <a href={recipeLink} className="add-button">
-              Voir la recette
-            </a>
-            <Button
-              onClick={() => setShowModal(false)}
-              className="close-button"
-            >
-              Fermer
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 }

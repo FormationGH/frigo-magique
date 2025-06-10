@@ -6,6 +6,7 @@ import { checkEmail } from "@/utils/check-emailsyntax";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import errorMessages from "@/utils/error";
 
 export default function Signup() {
   const router = useRouter();
@@ -18,11 +19,11 @@ export default function Signup() {
 
     // Vérification des champs
     if (!username || !pseudo || !email || !password) {
-      throw new Error("Aucun champ ne doit être vidé !");
+      return toast.error(errorMessages.missingFields);
     }
 
     if (!checkEmail(email)) {
-      throw new Error("Veuillez entrer un email valide !");
+      return toast.error(errorMessages.invalidEmail);
     }
 
     try {
@@ -31,7 +32,7 @@ export default function Signup() {
       toast.success("Votre compte a bien été créé avec succès !");
       router.push("/login/signin");
     } catch (error) {
-      toast.error(error.message);
+      toast.error(errorMessages.serverError);
     }
   }
 

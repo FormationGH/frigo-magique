@@ -41,6 +41,9 @@ export default function ConnectedLayout({ children }) {
 
   function exitGuestMode() {
     deleteCookie("guest");
+    deleteCookie("accessMode");
+
+    setIsGuest(false);
     router.push("/");
   }
 
@@ -55,15 +58,14 @@ export default function ConnectedLayout({ children }) {
   // Regroupe les boutons utilisateur
   const userButtons = () => (
     <>
-      {isGuest && (
+      {isGuest ? (
         <Button
           onClick={exitGuestMode}
           className="text-[#902124] rounded-xl border border-[#902124] px-4 py-2"
         >
           Quitter mode invité
         </Button>
-      )}
-      {session?.user?.email ? (
+      ) : session?.user?.email ? (
         <div className="signout-button">
           <Button
             withoutMarginTop
@@ -75,7 +77,12 @@ export default function ConnectedLayout({ children }) {
         </div>
       ) : (
         <Link href="/login/signin">
-          <Button withoutMarginTop>Se connecter</Button>
+          <Button
+            className="bg-[#902124] text-white px-4 py-2 rounded-xl border border-white hover:bg-[#65963E] transition-transform hover:scale-105"
+            withoutMarginTop
+          >
+            Se connecter
+          </Button>
         </Link>
       )}
     </>

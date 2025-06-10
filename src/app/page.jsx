@@ -7,9 +7,32 @@ export default function Index() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center p-6">
       {/* Titre principal */}
-      <h1 className="text-3xl font-extrabold text-[#7EAF50] mb-4">
-        Bienvenue sur Frigo Magique !
-      </h1>
+      <div className="max-w-4xl mx-auto text-center p-6">
+        <h1 className="text-3xl font-bold text-[#ab833d] mb-10">
+          Bienvenue sur Frigo Magique !
+        </h1>
+        <p className="text-lg mt-4 text-gray-700">
+          Chaque jour, des aliments sont oubliés et finissent à la poubelle,
+          alors qu’ils pourraient devenir de délicieux plats faits maison. Chez{" "}
+          <strong>Frigo Magique</strong>, nous croyons que chaque ingrédient
+          mérite d’être valorisé.
+        </p>
+        <p className="text-lg mt-4 text-gray-700">
+          Plutôt que de gaspiller, découvrez comment donner une nouvelle vie aux
+          restes et aux produits du quotidien grâce à des recettes créatives et
+          faciles à réaliser. Il suffit d’entrer les ingrédients dont vous
+          disposez, et <strong>Frigo Magique</strong> vous aidera à trouver des
+          idées de plats savoureux !
+        </p>
+        <p className="text-lg mt-4 text-gray-700 font-semibold">
+          Moins de gaspillage, plus de créativité : chaque repas devient un
+          geste éco-responsable.
+        </p>
+        <p className="text-lg mt-4 text-gray-700">
+          Rejoignez le mouvement et faites de votre cuisine un espace innovant,
+          durable et magique !
+        </p>
+      </div>
 
       <p className="text-lg text-[#ab833d] max-w-lg mb-6">
         Choisissez une catégorie pour explorer les recettes :
