@@ -19,7 +19,7 @@ export async function GET(req) {
     // Recherche par nom de recette
     recipes = await db
       .collection("recipes")
-      .find({ title: { $regex: `^${recipeQuery}`, $options: "i" } })
+      .find({ title: { $regex: `${recipeQuery}`, $options: "i" } })
       .toArray();
   } else if (ingredientQuery) {
     const ingredients = ingredientQuery
@@ -29,7 +29,7 @@ export async function GET(req) {
     recipes = await db
       .collection("recipes")
       .find({
-        ingredients: { $in: ingredients.map((i) => new RegExp(`^${i}`, "i")) },
+        ingredients: { $in: ingredients.map((i) => new RegExp(`${i}`, "i")) },
       })
       .toArray();
   }

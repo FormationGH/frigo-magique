@@ -26,8 +26,8 @@ export default function GuestMode() {
         </Button>
 
         <p className="text-sm mt-6 text-gray-500">
-          Note : En mode invité, vous ne pourrez pas sauvegarder vos ingrédients
-          ni interagir avec les recettes.
+          Note : En mode invité, vous ne pourrez pas faire de recherches de
+          recettes.
         </p>
       </div>
     </div>

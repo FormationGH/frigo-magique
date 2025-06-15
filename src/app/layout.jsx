@@ -5,6 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import ConnectedLayout from "@/components/ConnectedLayout/ConnectedLayout";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
+import { ThemeProvider } from "@/app/Provider";
+import ThemeWrapper from "@/components/ThemeWrapper/ThemeWrapper";
 
 export const metadata = {
   title: "Frigo Magique",
@@ -23,6 +25,7 @@ export default async function RootLayout({ children }) {
           name="description"
           content="Trouvez une recette rapidement en fonction de vos ingrédients et évitez le gaspillage alimentaire !"
         />
+        <link rel="icon" href="/icon.png" type="image/png" />
 
         {/* Socials Cards */}
         <meta
@@ -62,7 +65,11 @@ export default async function RootLayout({ children }) {
         {/* Contenu principal */}
         <div className="flex-1 flex items-center justify-center">
           <AuthProvider>
-            <ConnectedLayout session={session}>{children}</ConnectedLayout>
+            <ThemeProvider>
+              <ThemeWrapper>
+                <ConnectedLayout session={session}>{children}</ConnectedLayout>
+              </ThemeWrapper>
+            </ThemeProvider>
           </AuthProvider>
         </div>
       </body>

@@ -10,14 +10,17 @@ import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import SearchModal from "../SearchModal/SearchModal";
+import { useContext } from "react";
+import { ThemeContext } from "@/app/Provider";
 
 export default function ConnectedLayout({ children }) {
   // Variables
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [isGuest, setIsGuest] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   useEffect(() => {
     const mode = getCookie("accessMode");
@@ -55,6 +58,49 @@ export default function ConnectedLayout({ children }) {
     router.replace("/");
   }
 
+  function DarkModeToggle() {
+    const { isDarkMode, setIsDarkMode } = useContext(ThemeContext);
+
+    return (
+      <button
+        onClick={() => setIsDarkMode(!isDarkMode)}
+        className="flex items-center gap-2 p-2 rounded-md transition bg-gray-400 text-black hover:bg-gray-500 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-400"
+      >
+        {isDarkMode ? (
+          <>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 512 512"
+            >
+              <path
+                fill="#FFC639"
+                d="m260.622 42.537l58.117-39.696c3.641-2.487 8.643-1.147 10.552 2.828l30.483 63.437a7.2 7.2 0 0 0 7.035 4.062l70.179-5.32c4.397-.333 8.058 3.328 7.725 7.725l-5.32 70.179a7.2 7.2 0 0 0 4.062 7.035l63.437 30.483c3.975 1.91 5.315 6.911 2.828 10.552l-39.696 58.117a7.2 7.2 0 0 0 0 8.123l39.696 58.117c2.487 3.641 1.147 8.643-2.828 10.552l-63.437 30.483a7.2 7.2 0 0 0-4.062 7.035l5.32 70.179c.333 4.397-3.328 8.058-7.725 7.725l-70.179-5.32a7.2 7.2 0 0 0-7.035 4.062l-30.483 63.437c-1.91 3.975-6.911 5.315-10.552 2.828l-58.117-39.696a7.2 7.2 0 0 0-8.123 0l-58.117 39.696c-3.641 2.487-8.643 1.147-10.552-2.828l-30.483-63.437a7.2 7.2 0 0 0-7.035-4.062l-70.179 5.32c-4.397.333-8.058-3.328-7.725-7.725l5.32-70.179a7.2 7.2 0 0 0-4.062-7.035L6.228 328.731c-3.975-1.91-5.315-6.911-2.828-10.552l39.696-58.117a7.2 7.2 0 0 0 0-8.123L3.401 193.821c-2.487-3.641-1.147-8.643 2.828-10.552l63.437-30.483a7.2 7.2 0 0 0 4.062-7.035l-5.32-70.179c-.333-4.397 3.328-8.058 7.725-7.725l70.179 5.32a7.2 7.2 0 0 0 7.035-4.062L183.83 5.668c1.91-3.975 6.911-5.315 10.552-2.828l58.117 39.696a7.2 7.2 0 0 0 8.123.001"
+              />
+              <circle cx="256.56" cy="256" r="194.415" fill="#FFE564" />
+            </svg>
+            <span>Mode Clair</span>
+          </>
+        ) : (
+          <>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 512 512"
+            >
+              <path
+                fill="#FDE364"
+                d="M503.851 210.204C492.563 120.657 434.38 44.485 355.192 7.235c-11.279-5.306-22.337 7.572-15.47 17.982c18.48 28.029 30.919 60.278 35.273 94.838c18.733 148.659-106.281 273.673-254.94 254.94c-34.56-4.354-66.81-16.793-94.839-35.273c-10.41-6.866-23.287 4.191-17.982 15.478c37.25 79.182 113.422 137.364 202.969 148.651c171.226 21.579 315.226-122.414 293.648-293.647"
+              />
+            </svg>
+            <span>Mode Sombre</span>
+          </>
+        )}
+      </button>
+    );
+  }
   // Regroupe les boutons utilisateur
   const userButtons = () => (
     <>
@@ -91,6 +137,7 @@ export default function ConnectedLayout({ children }) {
   // Regroupe les liens de navigation avec SVG
   const navLinks = (
     <>
+      {/* Accueil */}
       <li>
         <Link href="/">
           <svg
@@ -108,13 +155,19 @@ export default function ConnectedLayout({ children }) {
         </Link>
       </li>
       <li>
-        <button
-          onClick={() => setIsOpen(true)}
-          className="p-1 rounded-xl hover:bg-gray-800 duration-150"
+        {/* Recherche */}
+        <span
+          onClick={() => {
+            setIsOpen(true);
+            setIsSearchActive(true);
+          }}
+          className="flex items-center justify-center p-1 rounded-xl duration-150 cursor-pointer hover:bg-gray-800"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className={`w-10 h-10 text-gray-500`}
+            className={`w-10 h-10 ${
+              isSearchActive ? "text-white" : "text-gray-500"
+            }`}
             viewBox="0 0 256 256"
           >
             <path
@@ -122,9 +175,9 @@ export default function ConnectedLayout({ children }) {
               d="M232.49 215.51L185 168a92.12 92.12 0 1 0-17 17l47.53 47.54a12 12 0 0 0 17-17ZM44 112a68 68 0 1 1 68 68a68.07 68.07 0 0 1-68-68"
             />
           </svg>
-        </button>
+        </span>
       </li>
-
+      {/* Profil */}
       <li>
         <Link href="/profile">
           <svg
@@ -165,7 +218,8 @@ export default function ConnectedLayout({ children }) {
 
         {/* Zone utilisateur affichée uniquement sur grand écran */}
         <div className="hidden lg:flex items-center gap-4 min-w-[250px] justify-end w-[350px]">
-          {userButtons(false)}
+          <DarkModeToggle />
+          {status === "loading" ? null : userButtons()}{" "}
         </div>
 
         {/* Menu Burger pour mobile */}
@@ -196,7 +250,14 @@ export default function ConnectedLayout({ children }) {
         </div>
       </header>
 
-      {isOpen && <SearchModal closeModal={() => setIsOpen(false)} />}
+      {isOpen && (
+        <SearchModal
+          closeModal={() => {
+            setIsOpen(false);
+            setIsSearchActive(false);
+          }}
+        />
+      )}
 
       {/* Content */}
       <div className="flex-1">{children}</div>

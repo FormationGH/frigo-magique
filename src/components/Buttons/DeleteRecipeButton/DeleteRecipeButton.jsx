@@ -26,7 +26,7 @@ export default function DeleteRecipeButton({ recipeId, onDelete }) {
   return (
     <button
       onClick={handleDelete}
-      className="bg-red-500 text-white p-2 rounded-md hover:bg-red-400 hover:scale-105"
+      className="delete-button bg-red-500 border-[1.5px] text-white p-2 rounded-lg hover:bg-red-400 hover:scale-105"
     >
       Supprimer
     </button>

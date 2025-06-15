@@ -26,8 +26,8 @@ export default function Login() {
             >
               <h3 className="font-bold text-xl">S'inscrire ou se connecter</h3>
               <p className="text-sm mt-2">
-                Accédez aux fonctionnalités complètes : entrez vos ingrédients,
-                sauvegardez vos recettes et profitez du mode anti-gaspillage !
+                Accédez aux fonctionnalités complètes : sauvegardez vos recettes
+                et profitez du système de recherche !
               </p>
             </div>
           </Link>
@@ -41,7 +41,7 @@ export default function Login() {
               <h3 className="font-bold text-xl"> Utiliser en mode invité</h3>
               <p className="text-sm mt-2">
                 Explorez Frigo Magique sans compte : découvrez des recettes sans
-                pouvoir ajouter vos propres ingrédients.
+                autres fonctionnalités.
               </p>
             </div>
           </Link>

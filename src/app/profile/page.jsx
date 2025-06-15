@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { MongoClient } from "mongodb";
+import Link from "next/link";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -41,8 +42,8 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#ede7dd]">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg border border-[#ab833d] text-center">
+    <div className="profile-container flex flex-col items-center justify-center min-h-screen bg-[#ede7dd]">
+      <div className="profile-card w-full max-w-md bg-white p-6 rounded-lg border border-[#ab833d] text-center">
         <h1 className="text-3xl font-bold text-[#ab833d]">Mon Profil</h1>
 
         {user && (
@@ -94,9 +95,9 @@ export default async function ProfilePage() {
 
         {/* Bouton de retour */}
         <div className="mt-6">
-          <a href="/" className="return-button">
+          <Link href="/" className="return-button">
             Retour à l'accueil
-          </a>
+          </Link>
         </div>
       </div>
     </div>

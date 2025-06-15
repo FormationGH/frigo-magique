@@ -15,7 +15,7 @@ export default function RecipeContent({ recipe, categoryPath }) {
     <div className="container mx-auto text-center p-4 md:p-6 max-w-sm md:max-w-lg lg:max-w-2xl">
       {!isDeleted ? ( // Vérifie si la recette est supprimée
         <>
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#902124] mb-4">
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#7EAF50] mb-4">
             {recipe.title}
           </h1>
 

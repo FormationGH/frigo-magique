@@ -19,15 +19,6 @@
   @apply text-3xl font-bold text-[#ab833d] mb-6;
 }
 
-/* Boutons */
-/* .menu-dropdown button {
-  @apply px-2 py-1 text-xs max-w-[120px];
-} */
-
-.signout-button {
-  @apply bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl;
-}
-
 .close-button {
   @apply border border-black text-black px-4 py-2 rounded-md bg-transparent hover:bg-gray-100;
 }
@@ -35,10 +26,6 @@
 .auth-method {
   @apply p-6 rounded-2xl cursor-pointer transition duration-300 hover:scale-105;
 }
-
-/* .return-button {
-  @apply bg-[#7EAF50] text-white text-lg font-bold px-5 py-2 rounded-lg hover:bg-[#65963E] transition;
-} */
 
 .auth-method-green {
   @apply border border-[#7EAF50] text-[#7EAF50] hover:bg-gray-200;
@@ -71,4 +58,29 @@
   max-height: 300px;
   object-fit: cover;
   border-radius: 8px;
+}
+
+/* Mode Sombre */
+body {
+  @apply bg-white text-black;
+}
+
+.dark body {
+  @apply bg-gray-800 text-black;
+}
+
+.dark button {
+  @apply bg-gray-700 text-white  hover:bg-gray-400 transition-transform hover:scale-105;
+}
+
+.dark button.delete-button {
+  @apply border-red-500 bg-gray-700 text-white hover:border-red-400 hover:bg-gray-500;
+}
+
+.dark .profile-container {
+  @apply bg-gray-800 text-white;
+}
+
+.dark .profile-card {
+  @apply bg-gray-200 border-gray-600;
 }
